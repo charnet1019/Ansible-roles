@@ -83,7 +83,8 @@ EOF
 function get_cpu() {
   # 获取cpu使用信息
 
-  cpu_usedutilization=$(cat <(grep 'cpu ' /proc/stat) <(sleep 1 && grep 'cpu ' /proc/stat) | awk -v RS="" '{printf ("%.2f\n", ($13-$2+$15-$4)*100/($13-$2+$15-$4+$16-$5))}')
+  #cpu_usedutilization=$(cat <(grep 'cpu ' /proc/stat) <(sleep 1 && grep 'cpu ' /proc/stat) | awk -v RS="" '{printf ("%.2f\n", ($13-$2+$15-$4)*100/($13-$2+$15-$4+$16-$5))}')
+  cpu_usedutilization=$(top -b -n2 -p 1 | fgrep "Cpu(s)" | tail -1 | awk -F'id,' -v prefix="$prefix" '{ split($1, vs, ","); v=vs[length(vs)]; sub("%", "", v); printf "%s%.1f\n", prefix, 100 - v }')
   cpu_loadavg1=$(awk '{print $1}' /proc/loadavg)
   cpu_loadavg5=$(awk '{print $2}' /proc/loadavg)
   cpu_loadavg15=$(awk '{print $3}' /proc/loadavg)
